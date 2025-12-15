@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spell It, To Win It</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+    body {
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 70% 10%, #ffe259, #ffa751 60%, #ff6a88 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .logo-container {
+      margin-top: 36px;
+      margin-bottom: 12px;
+      perspective: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      width: 100%;
+      max-width: 980px;
+    }
+    .logo {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 2.6em;
+      letter-spacing: 0.09em;
+      color: #fff;
+      text-shadow:
+        0 2px 6px #7e3ff2,
+        0 0px 15px #ff52a2,
+        2px 2px 0 #2df7ff;
+      background: linear-gradient(90deg, #7e3ff2 0%, #2df7ff 100%);
+      padding: 16px 38px;
+      border-radius: 40px;
+      box-shadow: 0 6px 28px 0 #8b47ea99, 0 2px 8px #ff8fa3;
+      transition: transform 0.18s cubic-bezier(.68,-0.55,.27,1.55);
+      display: inline-block;
+      position: relative;
+    }
+    .logo:active {
+      transform: rotateY(25deg) scale(0.97);
+      box-shadow: 0 0px 0px 0 #00f0ff;
+    }
+    .logo-shine {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.05) 60%);
+      border-radius: inherit;
+      z-index: 2;
+      animation: shine 2.5s infinite linear;
+    }
+    @keyframes shine {
+      0% { opacity: 0.5; }
+      40% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    .container {
+      background: rgba(255,255,255,0.85);
+      max-width: 420px;
+      width: 95%;
+      border-radius: 28px;
+      padding: 32px 24px 24px 24px;
+      margin-top: 16px;
+      box-shadow: 0 4px 28px #a1e1ff70, 0 1.5px 8px #ffbdbd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 420px;
+    }
+    .top-controls {
+      position: absolute;
+      top: 20px;
+      right: 22px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      z-index: 20;
+    }
+    .control-btn {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #ffbdbd;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      color: #7e3ff2;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #00000022;
+      font-family: inherit;
+    }
+    .control-btn.small { padding: 6px 8px; font-size: 0.9em; }
+    .scrambled {
+      font-size: 2.2em;
+      text-align: center;
+      letter-spacing: 0.18em;
+      margin: 12px 0 12px 0;
+      color: #ff52a2;
+      font-family: 'Luckiest Guy', cursive;
+      text-shadow: 0 1px 0 #fff, 0 1px 16px #ffbdbd;
+      border-bottom: 2px dashed #2df7ff;
+      padding-bottom: 8px;
+      animation: pop-in 0.6s cubic-bezier(.48,1.7,.39,.98);
+      min-height: 48px;
+      width: 100%;
+    }
+    @keyframes pop-in {
+      0% { opacity: 0; transform: scale(0.6);}
+      60% { opacity: 1; transform: scale(1.15);}
+      100% { transform: scale(1);}
+    }
+    .timer {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #7e3ff2;
+      font-size: 1.05em;
+      background: #f5e8ff;
+      border-radius: 12px;
+      padding: 4px 18px;
+      box-shadow: 0 0 6px #d7c7ff77;
+      display: inline-block;
+    }
+    .meaning {
+      font-size: 0.98em;
+      margin: 6px 0 10px 0;
+      color: #2b2b2b;
+      background: #fff8ef;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px dashed #ffd9c8;
+      width: 100%;
+      text-align: center;
+      min-height: 42px;
+      box-shadow: 0 2px 8px #ffd8cf66;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.2em;
+      border-radius: 16px;
+      border: 2px solid #2df7ff;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border 0.2s;
+      background: #fff8ee;
+    }
+    input[type="text"]:focus {
+      border-color: #ff52a2;
+      background: #fff5fa;
+    }
+    button {
+      width: 100%;
+      padding: 12px 0;
+      font-size: 1.2em;
+      font-family: inherit;
+      border-radius: 16px;
+      border: none;
+      background: linear-gradient(90deg, #ff52a2, #2df7ff);
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 2px 6px #ff8fa3;
+      cursor: pointer;
+      margin-top: 6px;
+      margin-bottom: 10px;
+      transition: background 0.2s, transform 0.12s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #2df7ff, #ff52a2);
+      transform: scale(1.04);
+    }
+    .result {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 1.2em;
+      min-height: 32px;
+      color: #fff;
+      font-family: 'Luckiest Guy', cursive;
+      text-shadow: 0 2px 10px #7e3ff2;
+      animation: pop-in 0.34s cubic-bezier(.48,1.7,.39,.98);
+    }
+    .score {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 1.05em;
+      color: #7e3ff2;
+      font-weight: bold;
+      background: #e1eaff;
+      border-radius: 10px;
+      padding: 6px 12px;
+      box-shadow: 0 0 4px #b7baff77;
+      display: inline-block;
+    }
+    #nextBtn {
+      width: 80%;
+      margin: 18px auto 0 auto;
+      display: block;
+      background: linear-gradient(90deg, #ffe259, #ffa751 90%);
+      color: #7e3ff2;
+      font-size: 1.1em;
+      margin-bottom: 0;
+      border: 2px solid #ff52a2;
+      box-shadow: 0 2px 10px #ffbdbd60;
+      font-family: 'Luckiest Guy', cursive;
+    }
+    #nextBtn:hover {
+      background: linear-gradient(90deg, #ffa751, #ffe259 90%);
+      color: #ff52a2;
+      border: 2px solid #7e3ff2;
+    }
+    .controls-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .control-left {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .control-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .small-btn {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #ffd5d5;
+      background: #ffffffcc;
+      cursor: pointer;
+      color: #7e3ff2;
+      font-weight: bold;
+    }
+    .hintBtn { width: 48px; height: 42px; display: inline-flex; align-items:center; justify-content:center; font-weight:bold; border-radius:12px; }
+    .voice-controls { display:flex; gap:8px; align-items:center; }
+    .language-select, .category-label {
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid #ffd9c8;
+      background: #fff8ee;
+      font-weight: bold;
+      color: #7e3ff2;
+    }
+    .shake {
+      animation: shakeit 0.5s;
+    }
+    @keyframes shakeit {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+      100% { transform: translateX(0); }
+    }
+    /* Confetti effect */
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      overflow: hidden;
+      animation: fadeout 1.6s 1.4s forwards;
+    }
+    @keyframes fadeout {
+      to { opacity: 0; }
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      opacity: 0.77;
+      animation: drop 1.2s linear forwards;
+    }
+    @keyframes drop {
+      to {
+        transform: translateY(420px) rotate(380deg) scale(1.25);
+        opacity: 0.2;
+      }
+    }
+
+    /* Pause overlay */
+    .overlay-paused {
+      position: fixed;
+      z-index: 9998;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.6em;
+      text-shadow: 0 2px 10px #000;
+      font-weight: bold;
+    }
+    .overlay-paused.show { display: flex; }
+  </style>
+</head>
+<body>
+  <div class="logo-container" id="logoContainer">
+    <div class="logo" id="logoText">
+      <span style="color:#ffe259">S</span><span style="color:#2df7ff">p</span><span style="color:#ff52a2">e</span><span style="color:#ffa751">l</span><span style="color:#7e3ff2">l</span>
+      <span style="color:#ff52a2"> </span>
+      <span style="color:#2df7ff">I</span><span style="color:#ffe259">t</span><span style="color:#ff52a2">,</span>
+      <span style="color:#ffa751"> </span>
+      <span style="color:#7e3ff2">T</span><span style="color:#ff52a2">o</span>
+      <span style="color:#2df7ff"> </span>
+      <span style="color:#ffe259">W</span><span style="color:#7e3ff2">i</span><span style="color:#ffa751">n</span>
+      <span style="color:#ff52a2"> </span>
+      <span style="color:#2df7ff">I</span><span style="color:#ffe259">t</span>
+      <div class="logo-shine"></div>
+    </div>
+
+    <!-- Top-right controls placed inside logo-container to sit on top-right of game area -->
+    <div class="top-controls" aria-hidden="false">
+      <button class="control-btn small" id="exitBtn" title="Exit">Exit</button>
+      <button class="control-btn small" id="pauseBtn" title="Pause">Pause</button>
+      <button class="control-btn small" id="muteBtn" title="Mute background music">Mute</button>
+    </div>
+  </div>
+
+  <div class="container" role="main" aria-labelledby="gameTitle">
+    <div class="controls-row" style="margin-bottom: 6px;">
+      <div class="control-left">
+        <select id="languageSelect" class="language-select" aria-label="Select language">
+          <option value="english">English Spelling</option>
+          <option value="filipino">Filipino Spelling</option>
+        </select>
+        <div class="category-label" id="categoryLabel">Category: Spelling</div>
+      </div>
+      <div class="control-right">
+        <div class="voice-controls" title="Replay word and speed">
+          <button class="small-btn" id="replayBtn" title="Replay word">🔊</button>
+          <input id="voiceSpeed" type="range" min="0.6" max="1.6" step="0.1" value="1" style="width:90px;" title="Voice speed"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="timer" id="timer">Time: 0s</div>
+    <div class="meaning" id="wordMeaning">Meaning will appear here before each round</div>
+    <div class="scrambled" id="scrambledWord">------</div>
+
+    <form id="guessForm" autocomplete="off">
+      <input type="text" id="userGuess" placeholder="Type the correct spelling..." required autocomplete="off"/>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button type="submit">Check</button>
+        <button type="button" id="hintBtn" class="hintBtn small-btn" title="Reveal first letter">Hint</button>
+      </div>
+    </form>
+
+    <div class="result" id="resultMsg"></div>
+    <div style="display:flex; gap:10px; align-items:center; margin-top:8px;">
+      <div class="score" id="scoreMsg">Score: 0 / 0</div>
+      <div style="font-size:0.95em; color:#7e3ff2; padding:6px 10px; background:#fff8ef; border-radius:10px; border:1px solid #ffd9c8;">Correct: <span id="correctCount">0</span> · Incorrect: <span id="incorrectCount">0</span></div>
+    </div>
+
+    <button id="nextBtn" style="display:none;margin-top:12px;">Next Word</button>
+
+  </div>
+
+  <div class="overlay-paused" id="pauseOverlay">Paused</div>
+
+  <!-- Background music (looping) -->
+  <audio id="bgMusic" loop crossorigin="anonymous">
+    <!-- Very short base64-encoded loop not included — use placeholder silent audio to avoid network dependency -->
+    <source src="" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Word banks with brief meanings (English challenging list and Filipino list provided)
+    const wordBank = {
+      english: [
+        {word: "conscientious", meaning: "Wishing to do what is right; diligent and careful."},
+        {word: "mischievous", meaning: "Causing or showing a fondness for causing trouble in a playful way."},
+        {word: "acquaintance", meaning: "A person one knows slightly, not a close friend."},
+        {word: "embarrassment", meaning: "A feeling of self-consciousness or awkwardness."},
+        {word: "rhythm", meaning: "A strong, regular repeated pattern of sound or movement."},
+        {word: "occurrence", meaning: "An incident or event that happens."},
+        {word: "separate", meaning: "To set or keep apart; distinct."},
+        {word: "privilege", meaning: "A special right or advantage available only to a particular person."},
+        {word: "questionnaire", meaning: "A set of printed or written questions with a choice of answers."},
+        {word: "definitely", meaning: "Without doubt; certainly."}
+      ],
+      filipino: [
+        {word: "himpapawid", meaning: "Kalawakan o atmospera; the sky/airspace."},
+        {word: "traysikel", meaning: "A three-wheeled vehicle used frequently as public transport."},
+        {word: "brilyante", meaning: "Matigas at mamahaling bato; diamond."},
+        {word: "alingasngas", meaning: "Ingay o malakas na tunog; noise."},
+        {word: "prusisyon", meaning: "Religious procession; march."},
+        {word: "desperado", meaning: "Isang taong mapanganib o desperado."},
+        {word: "kuwaderno", meaning: "Notebook; lapbook for writing notes."},
+        {word: "ekspresyon", meaning: "Expression; how something is shown or conveyed."},
+        {word: "misteryoso", meaning: "Mysterious or secretive."},
+        {word: "kumukutikutitap", meaning: "Sparkling or glittering; twinkling rapidly."}
+      ]
+    };
+
+    // Keep compatibility with old words if user previously relied on them
+    const fallbackWords = [
+      "abandon", "accumulate", "awkward", "beneficial", "consequence", "dedicate", "elaborate",
+      "forbidden", "hypothesis", "influence", "juvenile", "linguistic", "mischievous", "notorious",
+      "optimistic", "perceive", "quarantine", "relevant", "strategy", "transmit"
+    ];
+
+    // State
+    let currentBank = 'english';
+    let currentItem = null; // {word, meaning}
+    let scrambled = "";
+    let timer = 0;
+    let timerInterval = null;
+    let score = 0, total = 0;
+    let paused = false;
+    let hintUsed = false;
+    let bgMuted = false;
+    let bgAudio = document.getElementById('bgMusic');
+
+    // If you want to provide an actual background audio file, set src attribute dynamically:
+    // bgAudio.src = 'assets/bg-loop.mp3'; bgAudio.volume = 0.35; bgAudio.play().catch(()=>{});
+
+    // Utility: Fisher-Yates shuffle
+    function shuffleWord(word) {
+      let arr = word.split('');
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      // Avoid same order
+      if (arr.join('') === word && word.length > 1) {
+        return shuffleWord(word);
+      }
+      return arr.join('');
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById('scoreMsg').textContent = `Score: ${score} / ${total}`;
+      document.getElementById('correctCount').textContent = score;
+      document.getElementById('incorrectCount').textContent = (total - score);
+    }
+
+    function pickWord() {
+      const bank = wordBank[currentBank] && wordBank[currentBank].length ? wordBank[currentBank] : fallbackWords.map(w => ({word:w, meaning:''}));
+      const item = bank[Math.floor(Math.random() * bank.length)];
+      currentItem = item;
+      scrambled = shuffleWord(item.word);
+      hintUsed = false;
+      document.getElementById('hintBtn').disabled = false;
+    }
+
+    function showScrambled(visible = true) {
+      // show/hide scrambled word (initially hidden while meaning/pronunciation play)
+      const el = document.getElementById('scrambledWord');
+      el.textContent = visible ? scrambled : '------';
+    }
+
+    function showMeaning(text) {
+      document.getElementById('wordMeaning').textContent = text;
+    }
+
+    function startTimer() {
+      stopTimer();
+      timer = 0;
+      document.getElementById('timer').textContent = `Time: 0s`;
+      timerInterval = setInterval(() => {
+        if (!paused) {
+          timer++;
+          document.getElementById('timer').textContent = `Time: ${timer}s`;
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function updateScore(correct) {
+      total++;
+      if (correct) score++;
+      updateScoreDisplay();
+    }
+
+    function setControlsEnabled(enabled) {
+      document.getElementById('userGuess').disabled = !enabled;
+      document.getElementById('guessForm').querySelector('button[type="submit"]').disabled = !enabled;
+      document.getElementById('hintBtn').disabled = !enabled || hintUsed;
+    }
+
+    // Speech (word pronunciation) using Web Speech API
+    function speakText(text, opts = {}) {
+      return new Promise((resolve) => {
+        try {
+          const utter = new SpeechSynthesisUtterance(text);
+          // Choose language
+          if (currentBank === 'filipino') utter.lang = 'fil-PH' || 'en-PH' || 'tl-PH';
+          else utter.lang = 'en-US';
+          utter.rate = opts.rate || parseFloat(document.getElementById('voiceSpeed').value) || 1;
+          utter.pitch = opts.pitch || 1;
+          utter.onend = () => resolve();
+          utter.onerror = () => resolve();
+          // Ensure speechSynthesis unaffected by bgMusic mute — they are separate
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utter);
+        } catch (e) {
+          // If speech fails, just resolve
+          resolve();
+        }
+      });
+    }
+
+    // Simple short chime via WebAudio for positive/negative feedback
+    function playChime(type = 'positive') {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g);
+        g.connect(ctx.destination);
+        if (type === 'positive') {
+          o.type = 'sine';
+          o.frequency.setValueAtTime(880, ctx.currentTime);
+          g.gain.setValueAtTime(0.0001, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+          o.start();
+          o.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.18);
+          g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+          setTimeout(()=>{ o.stop(); ctx.close(); }, 600);
+        } else {
+          o.type = 'triangle';
+          o.frequency.setValueAtTime(300, ctx.currentTime);
+          g.gain.setValueAtTime(0.0001, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.09, ctx.currentTime + 0.02);
+          o.start();
+          o.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.16);
+          g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.45);
+          setTimeout(()=>{ o.stop(); ctx.close(); }, 520);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // Confetti effect (keeps your original confettiBurst)
+    function confettiBurst(count = 24) {
+      const confettiColors = ['#ffe259', '#ff52a2', '#2df7ff', '#7e3ff2', '#ffa751'];
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      for (let i = 0; i < count; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        piece.style.left = (Math.random() * 90 + 5) + 'vw';
+        piece.style.top = '-20px';
+        piece.style.transform = `rotate(${Math.random() * 360}deg) scale(${Math.random() * 1.2 + 0.6})`;
+        piece.style.animationDelay = (Math.random() * 0.7) + 's';
+        confetti.appendChild(piece);
+      }
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 2200);
+    }
+
+    // Play full correct feedback: chime + confetti + speech
+    async function correctFeedback() {
+      playChime('positive');
+      confettiBurst(28);
+      try { await speakText('Great job! Correct!'); } catch (e) {}
+    }
+
+    function incorrectFeedback() {
+      playChime('negative');
+      const el = document.getElementById('scrambledWord');
+      el.classList.remove('shake');
+      // trigger shake
+      void el.offsetWidth;
+      el.classList.add('shake');
+      try { speakText('Try the next one.'); } catch (e) {}
+    }
+
+    // Main round flow:
+    async function nextRound() {
+      // Reset UI
+      setControlsEnabled(false);
+      document.getElementById('resultMsg').textContent = "";
+      document.getElementById('nextBtn').style.display = "none";
+      pickWord();
+      showScrambled(false);
+      showMeaning(currentItem.meaning || "No definition available.");
+      document.getElementById('userGuess').value = "";
+      // Speak the word (pronunciation) BEFORE showing scrambled word
+      await speakText(currentItem.word, {rate: parseFloat(document.getElementById('voiceSpeed').value)});
+      // After speaking, reveal scrambled word and start timer
+      showScrambled(true);
+      setControlsEnabled(true);
+      document.getElementById('userGuess').focus();
+      startTimer();
+    }
+
+    // Event handlers
+    document.getElementById('guessForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (paused) return;
+      stopTimer();
+      setControlsEnabled(false);
+      const guess = document.getElementById('userGuess').value.trim().toLowerCase();
+      const correct = currentItem.word.toLowerCase();
+      if (guess === correct) {
+        document.getElementById('resultMsg').textContent = `✅ Correct! (${currentItem.word}) - Time: ${timer}s`;
+        updateScore(true);
+        correctFeedback();
+      } else {
+        document.getElementById('resultMsg').textContent = `❌ Incorrect! The correct spelling is "${currentItem.word}". - Time: ${timer}s`;
+        updateScore(false);
+        incorrectFeedback();
+      }
+      document.getElementById('nextBtn').style.display = "block";
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function() {
+      nextRound();
+    });
+
+    document.getElementById('replayBtn').addEventListener('click', function() {
+      // Replay pronunciation without restarting round
+      speakText(currentItem.word, {rate: parseFloat(document.getElementById('voiceSpeed').value)});
+    });
+
+    document.getElementById('voiceSpeed').addEventListener('input', function() {
+      const v = this.value;
+      // update title for accessibility
+      this.title = `Voice speed: ${v}`;
+    });
+
+    document.getElementById('hintBtn').addEventListener('click', function() {
+      if (!currentItem || hintUsed) return;
+      hintUsed = true;
+      this.disabled = true;
+      const w = currentItem.word;
+      // Reveal first letter (or first syllable approximate: up to first vowel cluster)
+      let reveal = w[0];
+      // For longer words, optionally reveal first syllable (up to first vowel and next letter)
+      if (w.length > 4) {
+        const match = w.match(/^[^aeiou]*[aeiou]+[^aeiou]*/i);
+        if (match) reveal = match[0];
+      }
+      document.getElementById('userGuess').value = reveal;
+      document.getElementById('userGuess').focus();
+    });
+
+    document.getElementById('logoContainer').addEventListener('click', () => {
+      const logo = document.getElementById('logoText');
+      logo.style.transform = 'rotateY(360deg) scale(1.12)';
+      confettiBurst(34);
+      setTimeout(() => {
+        logo.style.transform = '';
+      }, 380);
+    });
+
+    // Pause / Resume
+    document.getElementById('pauseBtn').addEventListener('click', function() {
+      paused = !paused;
+      const overlay = document.getElementById('pauseOverlay');
+      if (paused) {
+        this.textContent = 'Resume';
+        overlay.classList.add('show');
+        setControlsEnabled(false);
+      } else {
+        this.textContent = 'Pause';
+        overlay.classList.remove('show');
+        setControlsEnabled(true);
+      }
+    });
+
+    // Exit (redirect to homepage)
+    document.getElementById('exitBtn').addEventListener('click', function() {
+      const ok = confirm('Exit the game and return to the home page?');
+      if (ok) {
+        // Adjust target if you prefer a different page
+        window.location.href = '/';
+      }
+    });
+
+    // Mute / Unmute background music
+    document.getElementById('muteBtn').addEventListener('click', function() {
+      bgMuted = !bgMuted;
+      if (bgMuted) {
+        this.textContent = 'Unmute';
+        try { bgAudio.pause(); } catch(e) {}
+      } else {
+        this.textContent = 'Mute';
+        try { bgAudio.play().catch(()=>{}); } catch(e) {}
+      }
+    });
+
+    // Language selector change
+    document.getElementById('languageSelect').addEventListener('change', function() {
+      currentBank = this.value;
+      // Immediately start next round with chosen language
+      nextRound();
+    });
+
+    // Start first round
+    // Initialize display and score
+    updateScoreDisplay();
+    // Attempt to autoplay background music quietly if src set and allowed by browser
+    bgAudio.volume = 0.3;
+    // Start the first round after small delay to allow UI settle
+    setTimeout(() => nextRound(), 300);
+
+    // Accessibility: pressing Enter in hint (via button) shouldn't submit form
+    document.getElementById('hintBtn').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); this.click(); }
+    });
+
+    // Keep existing functionality: when user clicks Next, new round starts
+    // Preserve previously used variables and styles (no layout changes)
+  </script>
+</body>
+</html>
